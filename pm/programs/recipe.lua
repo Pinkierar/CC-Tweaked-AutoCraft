@@ -18,12 +18,14 @@ local function main()
 
   console.lineBreak()
   if type == "workbench" then
-    console.log("Arrange the ingredients as in a workbench")
-    console.log("Place the result in the selected cell")
+    console.log("Arrange the ingredients " ..
+      "as on the workbench in the upper left corner, " ..
+      "and place the result in the cell with a frame")
     inventory.slots.get(4, 2).select()
   else
-    console.log("Place ingredients in 1st, 2nd and 3rd columns")
-    console.log("Place the result in the 4th column")
+    console.log("Place the ingredients " ..
+      "in the 1st, 2nd and 3rd columns " ..
+      "and place the result in the 4th column")
     inventory.slots.get(4, 1).select()
   end
 
@@ -32,12 +34,13 @@ local function main()
   console.log("Save the recipe? ", true)
   if input.choice(nil, {"Yes", "No"}) ~= "Yes" then
     console.log("Save canceled")
-    return
+  else
+    inventory.updateSlots()
+    Recipe.new(name, type, inventory.slots).save(name)
+    console.log("Recipe saved!")
   end
 
-  inventory.updateSlots()
-  Recipe.new(name, type, inventory.slots).save(name)
-  console.log("Recipe saved!")
+  inventory.slots.get(1, 1).select()
 end
 
-main()
+return main

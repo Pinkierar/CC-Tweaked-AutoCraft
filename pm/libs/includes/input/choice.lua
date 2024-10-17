@@ -1,6 +1,7 @@
 local completion = require("cc.completion")
 local includes = require("includes/includes")
 local console = require("includes/console")
+local readUntil = require("includes/input/readUntil")
 
 --- @param message string
 --- @param variants table<number, string>
@@ -11,19 +12,16 @@ local function choice(message, variants, offLn)
     console.log(message .. ": ", true)
   end
 
-  local x, y = console.getCursorPos()
-
-  local value
-  repeat
-    console.setCursorPos(x, y)
-
-    value = read(nil, nil, function(text)
+  local value = readUntil(function(value)
+    return includes(variants, value)
+  end, {
+    completeFn = function(text)
       return completion.choice(text, variants)
-    end)
-  until includes(variants, value)
+    end
+  })
 
-  if offLn == true then
-    console.setCursorPos(x + string.len(value), y - 1)
+  if offLn ~= true then
+    console.log("")
   end
 
   return value
