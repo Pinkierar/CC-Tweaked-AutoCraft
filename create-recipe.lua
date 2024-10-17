@@ -1,63 +1,43 @@
-local newRecipe = require("auto-craft/recipe")
+local Recipe = require("auto-craft/Recipe")
+local Inventory = require("auto-craft/Inventory")
 local console = require("includes/console")
-local prompt = require("includes/prompt")
-
---- @param x number
---- @param y number
-local function logCurrentSlot(x, y)
-  for cy = 1, 3 do
-    local line = ""
-
-    for cx = 1, 3 do
-      local char
-      if cx == x and cy == y then
-        char = "[x]"
-      else
-        char = "[ ]"
-      end
-
-      line = line .. "" .. char
-    end
-
-    console.log(line)
-  end
-end
-
-local function clear()
-  console.clear()
-  console.log("Welcome to Recipe Creator!")
-end
+local input = require("includes/input")
 
 local function main()
-  local recipe = newRecipe()
+  console.log("Welcome to Recipe Creator!")
 
-  clear()
-  local typeCode = prompt("Enter \"M\" to set the type to \"Machine\",\n"
-    .. "or leave blank to set the type to \"Workbench\"")
-  if typeCode == "M" then
-    recipe.setType("machine")
+  local name = input.prompt("Enter recipe name")
+
+  local type = input.choice("Select crafter", {"workbench", "machine"})
+  if type == nil then
+    console.error("Wrong type")
+    return
   end
 
-  for y = 1, 3 do
-    for x = 1, 3 do
-      clear()
-      console.log("Enter Ingredient ID for this (x) slot:")
-      logCurrentSlot(x, y)
+  local inventory = Inventory.new()
 
-      recipe.setIngredient(x, y, prompt("ID"))
-    end
+  console.lineBreak()
+  if type == "workbench" then
+    console.log("Arrange the ingredients as in a workbench")
+    console.log("Place the result in the selected cell")
+    inventory.slots.get(4, 2).select()
+  else
+    console.log("Place ingredients in 1st, 2nd and 3rd columns")
+    console.log("Place the result in the 4th column")
+    inventory.slots.get(4, 1).select()
   end
 
-  local resultId = prompt("Result ID")
-  recipe.setResult(resultId)
-
-  clear()
-  console.log("Check your entry is correct")
-  console.log(recipe.toString())
-
-  if prompt("Enter \"Y\" to save or something else to exit.") == "Y" then
-    recipe.save()
+  sleep(0.2)
+  console.lineBreak()
+  console.log("Save the recipe? ", true)
+  if input.choice(nil, {"Yes", "No"}) ~= "Yes" then
+    console.log("Save canceled")
+    return
   end
+
+  inventory.updateSlots()
+  Recipe.new(name, type, inventory.slots).save(name)
+  console.log("Recipe saved!")
 end
 
 main()

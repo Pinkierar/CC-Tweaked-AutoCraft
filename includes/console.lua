@@ -21,27 +21,45 @@ end
 
 --- @param message string
 local function error(message)
-  io.output(io.stderr)
-  io.write("ERROR: " .. message .. "\n")
-  io.output(io.stdout)
+  printError("ERROR: " .. message)
 end
 
---- @param onlyCurrentLine boolean
-local function clear(onlyCurrentLine)
-  if onlyCurrentLine == true then
-    local _, y = getCursorPos()
-    term.clearLine()
-    setCursorPos(0, y)
-  else
-    term.clear()
-    setCursorPos(1, 1)
+local function clear()
+  term.clear()
+  setCursorPos(1, 1)
+end
+
+local function clearLine()
+  local _, y = getCursorPos()
+  term.clearLine()
+  setCursorPos(1, y)
+end
+
+--- @param count number
+local function clearLines(count)
+  local _, y = getCursorPos()
+
+  if y < count then
+    return clear()
   end
+
+  for i = 1, count do
+    clearLine()
+    setCursorPos(1, y - i)
+  end
+end
+
+local function lineBreak()
+  log("")
 end
 
 return {
   log = log,
+  lineBreak = lineBreak,
   error = error,
   clear = clear,
+  clearLine = clearLine,
+  clearLines = clearLines,
   setCursorPos = setCursorPos,
   getCursorPos = getCursorPos
 }

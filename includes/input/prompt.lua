@@ -4,22 +4,20 @@ local console = require("includes/console")
 --- @param offLn boolean
 --- @return string
 local function prompt(message, offLn)
-  local value
-
   if message ~= nil then
     console.log(message .. ": ", true)
   end
 
   local x, y = console.getCursorPos()
 
-  value = io.read()
+  local value
+  repeat
+    console.setCursorPos(x, y)
+    value = read()
+  until value ~= nil and value ~= ""
 
   if offLn == true then
     console.setCursorPos(x + string.len(value), y - 1)
-  end
-
-  if value == nil or value == "" then
-    return nil
   end
 
   return value

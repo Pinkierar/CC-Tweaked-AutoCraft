@@ -1,3 +1,3 @@
 --- @alias FilterFun fun(x: number, y: number): boolean
 --- @alias Filter table<number, table<number, FilterFun>>
---- @alias RecipeType ('"workbench"' | '"machine"')
+--- @alias CraftingType ('"workbench"' | '"machine"')
