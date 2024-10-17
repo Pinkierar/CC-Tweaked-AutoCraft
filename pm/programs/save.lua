@@ -1,54 +1,34 @@
 local console = require("includes/console")
 local input = require("includes/input")
-
-local function getDrives()
-  local drivers = {}
-
-  local sides = peripheral.getNames()
-  for _, side in ipairs(sides) do
-    local device = peripheral.wrap(side)
-    local type = peripheral.getType(device)
-
-    if type == "drive" then
-      table.insert(drivers, device)
-    end
-  end
-
-  return drivers
-end
-
-local function getDrivesWithDisk()
-  local drivesWithDisk = {}
-
-  local drives = getDrives()
-  for _, drive in ipairs(drives) do
-    if drive.hasData() then
-      table.insert(drivesWithDisk, drive)
-    end
-  end
-
-  return drivesWithDisk
-end
+local drivesUtils = require("includes/drivesUtils")
 
 --- @param path string
 local function saveToPath(path)
-  local pmDisk = fs.combine(path, "pm");
+  local pmPath = fs.combine(path, "pm");
 
-  if fs.exists(pmDisk) then
-    fs.delete(pmDisk)
+  if not fs.exists("pm") then
+    error("There is no \"pm\" folder on this computer")
+    return
   end
 
-  fs.copy("pm", pmDisk)
+  if fs.exists(pmPath) then
+    fs.delete(pmPath)
+  end
+
+  fs.copy("pm", pmPath)
 end
 
 local function main()
-  local drives = getDrivesWithDisk()
+  local drives = drivesUtils.getDrivesWithDisk()
 
   if #drives ~= 1 then
-    console.error("You have multiple drives connected!")
-    if not input.confirm("Write data to all disks?") then
-      console.log("Disconnect unnecessary drives and repeat...")
-      return
+    drives = drivesUtils.getPmDrives()
+    if #drives ~= 1 then
+      console.error("You have multiple drives connected")
+      if not input.confirm("Write data to all disks?") then
+        console.log("Disconnect unnecessary drives and repeat...")
+        return
+      end
     end
   end
 
@@ -57,6 +37,8 @@ local function main()
     saveToPath(mountPath)
     drive.setDiskLabel("pm")
   end
+
+  console.log("Saving complete!")
 end
 
 return main
