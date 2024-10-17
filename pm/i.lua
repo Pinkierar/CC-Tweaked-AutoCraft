@@ -1,32 +1,14 @@
-local drivesUtils = require("libs/includes/drivesUtils")
-local file = require("libs/includes/file")
+local r = require("cc.require")
 
---- @param path string
-local function saveFromPath(path)
-  local pmPath = fs.combine(path, "pm");
-
-  if not fs.exists(pmPath) then
-    error("There is no \"pm\" folder on the disk")
-    return
-  end
-
-  if fs.exists("pm") then
-    fs.delete("pm")
-  end
-
-  fs.copy(pmPath, "pm")
-
-  file.write("/pm.lua", "require(\"/pm/init\")")
+local pmPath = fs.find("/*/pm")[1]
+if pmPath == nil then
+  error("Folder \"pm\" not found on disk")
 end
 
-local drives = drivesUtils.getPmDrives()
-if #drives ~= 1 then
-  error("Duplicates pm disks")
-  return
-end
+local env = setmetatable({}, {__index = _ENV})
+env.require, env.package = r.make(env, pmPath .. "/libs")
+require = env.require
 
-local drive = drives[1]
-local mountPath = drive.getMountPath()
-saveFromPath(mountPath)
+local update = require("/" .. pmPath .. "/programs/update")
 
-print("Installation complete!")
+update()

@@ -1,7 +1,7 @@
 local console = require("includes/console")
-local input = require("includes/input")
 local copy = require("includes/copy")
 local drivesUtils = require("includes/drivesUtils")
+local file = require("includes/file")
 
 local function main()
   local drives = drivesUtils.getDrivesWithDisk()
@@ -10,10 +10,7 @@ local function main()
     drives = drivesUtils.getPmDrives()
     if #drives ~= 1 then
       console.error("You have multiple drives connected")
-      if not input.confirm("Write data to all disks?") then
-        console.log("Disconnect unnecessary drives and repeat...")
-        return
-      end
+      console.log("Disconnect unnecessary drives and repeat...")
     end
   end
 
@@ -22,11 +19,11 @@ local function main()
     return
   end
 
-  for _, drive in ipairs(drives) do
-    local mountPath = drive.getMountPath()
-    copy("pm", fs.combine(mountPath, "pm"))
-    drive.setDiskLabel("pm")
-  end
+  local drive = drives[1]
+
+  local mountPath = drive.getMountPath()
+  copy(fs.combine(mountPath, "pm"), "pm")
+  file.write("/pm.lua", "require(\"/pm/init\")")
 
   console.log("Complete!")
 end
