@@ -31,13 +31,12 @@ local function main()
 
   sleep(0.2)
   console.lineBreak()
-  console.log("Save the recipe? ", true)
-  if input.choice(nil, {"Yes", "No"}) ~= "Yes" then
-    console.log("Save canceled")
-  else
+  if input.confirm("Save the recipe?") then
     inventory.updateSlots()
     Recipe.new(name, type, inventory.slots).save(name)
     console.log("Recipe saved!")
+  else
+    console.log("Save canceled")
   end
 
   inventory.slots.get(1, 1).select()

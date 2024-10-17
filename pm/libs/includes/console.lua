@@ -21,7 +21,7 @@ end
 
 --- @param message string
 local function error(message)
-  printError("ERROR: " .. message)
+  printError(message)
 end
 
 local function clear()
