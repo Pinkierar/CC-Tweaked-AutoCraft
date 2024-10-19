@@ -53,7 +53,14 @@ end
 if includes(programs, program) then
   local main = require("/pm/programs/" .. program)
 
-  main()
+  local args = {}
+  for i, value in ipairs(arg) do
+    if i ~= 1  then
+      table.insert(args, value)
+    end
+  end
+
+  main(args)
 
   return
 end

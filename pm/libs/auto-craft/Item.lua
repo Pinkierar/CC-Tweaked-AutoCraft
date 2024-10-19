@@ -1,23 +1,15 @@
---- @class ItemDetail
---- @field name string
---- @field count number
+---@class (exact) ItemDetail
+---@field name string
+---@field count number
 
---- @class Item
---- @field name string
---- @field count number
---- @field isEmpty fun(): boolean
-
---- @class ItemStatic
---- @field new fun(name: string, count: number): Item
---- @field newFromDetail fun(detail: ItemDetail): Item
+---@class (exact) Item: ItemDetail
+---@field isEmpty fun(): boolean
 
 
---- @type ItemStatic
-local Item
-
---- @param name string
---- @param count number
---- @return Item
+---@param name? string
+---@param count? number
+---@return Item
+---@nodiscard
 local function new(name, count)
   if count == nil then
     if name == nil then
@@ -39,17 +31,19 @@ local function new(name, count)
   }
 end
 
---- @param detail ItemDetail
---- @return Item
+---@param detail ItemDetail
+---@return Item
+---@nodiscard
 local function newFromDetail(detail)
   if detail == nil then
-    return Item.new()
+    return new()
   end
 
-  return Item.new(detail.name, detail.count)
+  return new(detail.name, detail.count)
 end
 
-Item = {
+
+local Item = {
   new = new,
   newFromDetail = newFromDetail,
 }

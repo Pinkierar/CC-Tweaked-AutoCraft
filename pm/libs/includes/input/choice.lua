@@ -3,10 +3,11 @@ local includes = require("includes/includes")
 local console = require("includes/console")
 local readUntil = require("includes/input/readUntil")
 
---- @param message string
---- @param variants table<number, string>
---- @param offLn boolean
---- @return string
+---@param message string | nil
+---@param variants table<number, string>
+---@param offLn? boolean
+---@return string
+---@nodiscard
 local function choice(message, variants, offLn)
   if message ~= nil then
     console.log(message .. ": ", true)

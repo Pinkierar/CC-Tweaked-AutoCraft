@@ -1,18 +1,13 @@
 local Slot = require("auto-craft/Slot")
 local Item = require("auto-craft/Item")
 
---- @class Inventory
---- @field slots SlotMatrix
---- @field updateSlots fun(): void
 
---- @class InventoryStatic
---- @field new fun(): Inventory
+---@class (exact) Inventory
+---@field slots SlotMatrix
+---@field updateSlots fun()
 
 
---- @type InventoryStatic
-local Inventory
-
---- @return Inventory
+---@return Inventory
 local function new()
   local slots = Slot.newMatrix(4, 4)
 
@@ -34,6 +29,7 @@ local function new()
     updateSlots = updateSlots,
   }
 end
+
 
 Inventory = {
   new = new,

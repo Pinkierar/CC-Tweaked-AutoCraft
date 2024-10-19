@@ -1,5 +1,6 @@
---- @param path string
---- @return string File content
+---@param path string
+---@return string File content
+---@nodiscard
 local function read(path)
   local file = io.open(path, "r")
 
@@ -11,8 +12,8 @@ local function read(path)
   return content
 end
 
---- @param path string
---- @param content string
+---@param path string
+---@param content string
 local function write(path, content)
   local file = io.open(path, "w+")
 
@@ -22,7 +23,9 @@ local function write(path, content)
   io.close(file)
 end
 
-return {
+local fileUtils = {
   read = read,
   write = write
 }
+
+return fileUtils

@@ -33,7 +33,7 @@ local function main()
   console.lineBreak()
   if input.confirm("Save the recipe?") then
     inventory.updateSlots()
-    Recipe.new(name, type, inventory.slots).save(name)
+    Recipe.new(name, type, inventory.slots).save()
     console.log("Recipe saved!")
   else
     console.log("Save canceled")

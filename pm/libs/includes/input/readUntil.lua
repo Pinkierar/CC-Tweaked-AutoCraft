@@ -1,16 +1,17 @@
 local console = require("includes/console")
 
 
---- @class ReadOptions
---- @field replaceChar string
---- @field history table<number, string>
---- @field completeFn fun(partial: string): table<number, string>
---- @field default string
+---@class ReadOptions
+---@field replaceChar? string
+---@field history? table<number, string>
+---@field completeFn? fun(partial: string): table<number, string>
+---@field default? string
 
 
---- @param isFinish fun(value: string): boolean
---- @param options ReadOptions
---- @return string
+---@param isFinish fun(value: string): boolean
+---@param options? ReadOptions
+---@return string
+---@nodiscard
 local function readUntil(isFinish, options)
   if options == nil then
     options = {}
@@ -23,7 +24,7 @@ local function readUntil(isFinish, options)
 
   local originalX, y = console.getCursorPos()
 
-  --- @type string
+  ---@type string
   local value
   repeat
     console.setCursorPos(originalX, y)

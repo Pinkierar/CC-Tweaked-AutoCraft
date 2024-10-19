@@ -1,10 +1,11 @@
 local console = require("includes/console")
 local readUntil = require("includes/input/readUntil")
 
---- @param message string
---- @param default string
---- @param offLn boolean
---- @return string
+---@param message? string
+---@param default? string
+---@param offLn? boolean
+---@return string
+---@nodiscard
 local function prompt(message, default, offLn)
   if message ~= nil then
     console.log(message .. ": ", true)

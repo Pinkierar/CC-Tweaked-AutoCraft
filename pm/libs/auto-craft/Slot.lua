@@ -1,39 +1,30 @@
 local Matrix = require("includes/Matrix")
 
 
---- @class Slot
---- @field item Item
---- @field id number
---- @field select fun(): void
---- @field clear fun(offSelectPrev: boolean): void
+---@class (exact) Slot
+---@field item Item
+---@field id number
+---@field select fun()
+---@field clear fun(offSelectPrev: boolean)
 
---- @class SlotMatrix
---- @field set fun(x: number, y: number, newSlot: Slot): void
---- @field get fun(x: number, y: number): Slot
---- @field map fun(callback: fun(slot: Slot, x: number, y: number): boolean): Matrix
---- @field forEach fun(callback: fun(slot: Slot, x: number, y: number): void): void
---- @field find fun(callback: fun(slot: Slot, x: number, y: number): boolean): Slot
-
---- @class SlotStatic
---- @field new fun(id: number, item: Item): Slot
---- @field positionToSlotId fun(x: number, y: number): number
---- @field newMatrix fun(): SlotMatrix
+---@class (exact) SlotMatrix
+---@field set fun(x: number, y: number, newSlot: Slot)
+---@field get fun(x: number, y: number): Slot
+---@field map fun(callback: fun(slot: Slot, x: number, y: number): boolean): Matrix
+---@field forEach fun(callback: fun(slot: Slot, x: number, y: number))
+---@field find fun(callback: fun(slot: Slot, x: number, y: number): boolean): Slot
 
 
---- @type SlotStatic
-local Slot
-
---- @param id number
---- @param item Item
---- @return Slot
+---@param id number
+---@param item Item
+---@return Slot
+---@nodiscard
 local function new(id, item)
-  --local id =
-
   local function select()
     turtle.select(id)
   end
 
-  --- @param offSelectPrev boolean
+  ---@param offSelectPrev boolean
   local function clear(offSelectPrev)
     local prevSelectedId
     if not offSelectPrev then
@@ -56,21 +47,24 @@ local function new(id, item)
   }
 end
 
---- @param x number
---- @param y number
---- @return number
+---@param x number
+---@param y number
+---@return number
+---@nodiscard
 local function positionToSlotId(x, y)
   return (y - 1) * 4 + x
 end
 
---- @param sizeX number
---- @param sizeY number
---- @return SlotMatrix
+---@param sizeX number
+---@param sizeY number
+---@return SlotMatrix
+---@nodiscard
 local function newMatrix(sizeX, sizeY)
-  return Matrix.new(sizeX, sizeY)
+  return Matrix.new(sizeX, sizeY) --[[@as SlotMatrix]]
 end
 
-Slot = {
+
+local Slot = {
   new = new,
   positionToSlotId = positionToSlotId,
   newMatrix = newMatrix,

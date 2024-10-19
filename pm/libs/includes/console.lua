@@ -1,16 +1,17 @@
---- @return number, number
+---@return number, number
+---@nodiscard
 local function getCursorPos()
   return term.getCursorPos()
 end
 
---- @param x number
---- @param y number
+---@param x number
+---@param y number
 local function setCursorPos(x, y)
   term.setCursorPos(x, y)
 end
 
---- @param message string
---- @param offLn boolean
+---@param message string
+---@param offLn? boolean
 local function log(message, offLn)
   if offLn == true then
     term.write(message)
@@ -19,7 +20,7 @@ local function log(message, offLn)
   end
 end
 
---- @param message string
+---@param message string
 local function error(message)
   printError(message)
 end
@@ -35,7 +36,7 @@ local function clearLine()
   setCursorPos(1, y)
 end
 
---- @param count number
+---@param count number
 local function clearLines(count)
   local _, y = getCursorPos()
 
@@ -53,7 +54,7 @@ local function lineBreak()
   log("")
 end
 
-return {
+local console = {
   log = log,
   lineBreak = lineBreak,
   error = error,
@@ -63,3 +64,5 @@ return {
   setCursorPos = setCursorPos,
   getCursorPos = getCursorPos
 }
+
+return console

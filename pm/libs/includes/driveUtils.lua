@@ -40,8 +40,10 @@ local function getPmDrives()
   return pmDrives
 end
 
-return {
+local driveUtils = {
   getDrives = getDrives,
   getDrivesWithDisk = getDrivesWithDisk,
   getPmDrives = getPmDrives,
 }
+
+return driveUtils

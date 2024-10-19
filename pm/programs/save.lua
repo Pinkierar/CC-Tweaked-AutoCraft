@@ -1,13 +1,13 @@
 local console = require("includes/console")
 local input = require("includes/input")
 local copy = require("includes/copy")
-local drivesUtils = require("includes/drivesUtils")
+local driveUtils = require("includes/driveUtils")
 
 local function main()
-  local drives = drivesUtils.getDrivesWithDisk()
+  local drives = driveUtils.getDrivesWithDisk()
 
   if #drives ~= 1 then
-    drives = drivesUtils.getPmDrives()
+    drives = driveUtils.getPmDrives()
     if #drives ~= 1 then
       console.error("You have multiple drives connected")
       if not input.confirm("Write data to all disks?") then

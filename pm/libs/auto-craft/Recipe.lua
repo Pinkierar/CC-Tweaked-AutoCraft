@@ -1,31 +1,27 @@
-local ioFile = require("includes/file")
+local fileUtils = require("includes/fileUtils")
 
 
---- @class Recipe
---- @field name string
---- @field type CraftingType
---- @field slots SlotMatrix
---- @field toString fun(): string
---- @field save fun(): void
-
---- @class RecipeStatic
---- @field new fun(name: string, type: CraftingType, slots: SlotMatrix): Recipe
+---@class (exact) Recipe
+---@field name string
+---@field type CraftingType
+---@field slots SlotMatrix
+---@field toString fun(): string
+---@field save fun()
 
 
---- @type RecipeStatic
-local Recipe
-
---- @param name string
---- @param type CraftingType
---- @param slots SlotMatrix
---- @return Recipe
+---@param name string
+---@param type CraftingType
+---@param slots SlotMatrix
+---@return Recipe
+---@nodiscard
 local function new(name, type, slots)
-  --- @return string
+  ---@return string
+  ---@nodiscard
   local function toString()
-    --- @type string
+    ---@type string
     local content = name .. " " .. type
 
-    --- @type table<string, table<string, number>>
+    ---@type table<string, number>
     local resources = {}
     slots.forEach(function(slot)
       local item = slot.item;
@@ -74,7 +70,7 @@ local function new(name, type, slots)
   local function save()
     local path = "recipes/" .. name .. ".recipe"
 
-    ioFile.write(path, toString())
+    fileUtils.write(path, toString())
   end
 
   return {
@@ -85,7 +81,8 @@ local function new(name, type, slots)
   }
 end
 
-Recipe = {
+
+local Recipe = {
   new = new
 }
 
