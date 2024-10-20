@@ -1,13 +1,25 @@
 local console = require("includes/console")
-local input = require("includes/input")
 
 
 ---@class (exact) ModemMessage
 ---@field senderPort number
 ---@field payload any
 ---@field distance number
----@field position? Vector
 
+
+---@param modem Modem | nil
+---@return Modem
+local function validateModem(modem)
+  if modem == nil then
+    error("no modem")
+  end
+
+  if not modem.isWireless() then
+    error("modem is not wireless")
+  end
+
+  return modem
+end
 
 ---@param name string
 ---@return Modem | nil
@@ -56,66 +68,75 @@ local function getModem(name)
   end
 end
 
----@param modem Modem
+---@param modem Modem | nil
 ---@param port number
----@return boolean
 local function open(modem, port)
-  if modem.isOpen(port) then
-    if input.confirm("The port is already open. Continue?") then
-      modem.close(port)
-    else
-      return false
-    end
+  modem = validateModem(modem)
+
+  if not modem.isOpen(port) then
+    modem.open(port)
   end
-
-  modem.open(port)
-
-  console.log("Port " .. port .. " is listening on computer " .. os.getComputerID())
-
-  return true
 end
 
 ---@async
----@param modem Modem
+---@param modem Modem | nil
 ---@param port number
 ---@param handler fun(message: ModemMessage)
 local function waitMessage(modem, port, handler)
+  modem = validateModem(modem)
+
+  if not modem.isOpen(port) then
+    error("port is not open")
+  end
+
   local _, _, targetPort, senderPort, payload, distance = os.pullEvent("modem_message")
 
-  -- if targetPort == port then
-  handler({
-    senderPort = senderPort,
-    payload = payload,
-    distance = distance,
-  })
-  -- end
+  if targetPort == port then
+    handler({
+      senderPort = senderPort,
+      payload = payload,
+      distance = distance,
+    })
+  end
 end
 
 ---@async
----@param modem Modem
+---@param modem Modem | nil
 ---@param port number
 ---@param handler fun(message: ModemMessage)
 local function listen(modem, port, handler)
-  if open(modem, port) then
-    while true do
-      waitMessage(modem, port, handler)
-    end
+  open(modem, port)
+
+  console.log("Port " .. port .. " is listening on computer " .. os.getComputerID())
+
+  while true do
+    waitMessage(modem, port, handler)
   end
 end
 
----@param modem Modem
+---@param modem Modem | nil
 ---@param senderPort number | nil
 ---@param targetPort number
 ---@param payload? any
-local function send(modem, senderPort, targetPort, payload)
-  if not modem.isWireless() then
-    console.error("This is not a wireless modem")
-    return
+---@param handler? fun(message: ModemMessage)
+local function send(modem, senderPort, targetPort, payload, handler)
+  modem = validateModem(modem)
+  if senderPort ~= nil and not modem.isOpen(senderPort) then
+    console.error("senderPort is not opened")
   end
 
-  console.log("Sending to port " .. targetPort .. " from computer " .. os.getComputerID())
+  parallel.waitForAll(
+    function()
+      if senderPort == nil or handler == nil then
+        return
+      end
 
-  modem.transmit(targetPort, senderPort or 0, payload)
+      waitMessage(modem, senderPort, handler)
+    end,
+    function()
+      modem.transmit(targetPort, senderPort or 0, payload)
+    end
+  )
 end
 
 local modemUtils = {
@@ -123,7 +144,6 @@ local modemUtils = {
   getModems = getModems,
   getModem = getModem,
   open = open,
-  waitMessage = waitMessage,
   listen = listen,
   send = send,
 }

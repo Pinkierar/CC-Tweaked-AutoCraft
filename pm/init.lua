@@ -1,5 +1,5 @@
 local r = require("cc.require")
-local env = setmetatable({}, {__index = _ENV})
+local env = setmetatable({}, { __index = _ENV })
 env.require, env.package = r.make(env, "/pm/libs")
 require = env.require
 
@@ -55,7 +55,7 @@ if includes(programs, program) then
 
   local args = {}
   for i, value in ipairs(arg) do
-    if i ~= 1  then
+    if i ~= 1 then
       table.insert(args, value)
     end
   end
