@@ -1,3 +1,4 @@
+---@return Drive[]
 local function getDrives()
   local drivers = {}
 
@@ -14,6 +15,7 @@ local function getDrives()
   return drivers
 end
 
+---@return Drive[]
 local function getDrivesWithDisk()
   local drivesWithDisk = {}
 
@@ -27,6 +29,7 @@ local function getDrivesWithDisk()
   return drivesWithDisk
 end
 
+---@return Drive[]
 local function getPmDrives()
   local pmDrives = {}
 
@@ -40,10 +43,25 @@ local function getPmDrives()
   return pmDrives
 end
 
+---@return Drive[]
+local function getRecipeDrives()
+  local recipeDrives = {}
+
+  local drives = getDrivesWithDisk()
+  for _, drive in ipairs(drives) do
+    if string.find(drive.getDiskLabel(), "^recipe: ") ~= nil then
+      table.insert(recipeDrives, drive)
+    end
+  end
+
+  return recipeDrives
+end
+
 local driveUtils = {
   getDrives = getDrives,
   getDrivesWithDisk = getDrivesWithDisk,
   getPmDrives = getPmDrives,
+  getRecipeDrives = getRecipeDrives,
 }
 
 return driveUtils

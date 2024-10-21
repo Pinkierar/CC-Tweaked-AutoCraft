@@ -15,3 +15,8 @@
 ---@field isWireless fun(): boolean
 ---@field close fun(port: number)
 ---@field transmit fun(targetPort: number, senderPort: number, payload: any)
+
+---@class Drive
+---@field getMountPath fun(): string
+---@field isDiskPresent fun(): boolean
+---@field setDiskLabel fun(label: string)

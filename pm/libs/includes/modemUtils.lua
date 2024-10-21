@@ -2,10 +2,16 @@ local console = require("includes/console")
 
 
 ---@class (exact) ModemMessage
----@field senderPort number
+---@field senderPort Port
 ---@field payload any
 ---@field distance number
 
+
+---@enum Port
+local Port = {
+  center = 1,
+  crafter = 2,
+}
 
 ---@param modem Modem | nil
 ---@return Modem
@@ -69,7 +75,7 @@ local function getModem(name)
 end
 
 ---@param modem Modem | nil
----@param port number
+---@param port Port
 local function open(modem, port)
   modem = validateModem(modem)
 
@@ -80,13 +86,13 @@ end
 
 ---@async
 ---@param modem Modem | nil
----@param port number
+---@param port Port
 ---@param handler fun(message: ModemMessage)
 local function waitMessage(modem, port, handler)
   modem = validateModem(modem)
 
   if not modem.isOpen(port) then
-    error("port is not open")
+    error("port " .. port .. " is not open")
   end
 
   local _, _, targetPort, senderPort, payload, distance = os.pullEvent("modem_message")
@@ -102,7 +108,7 @@ end
 
 ---@async
 ---@param modem Modem | nil
----@param port number
+---@param port Port
 ---@param handler fun(message: ModemMessage)
 local function listen(modem, port, handler)
   open(modem, port)
@@ -115,21 +121,20 @@ local function listen(modem, port, handler)
 end
 
 ---@param modem Modem | nil
----@param senderPort number | nil
----@param targetPort number
+---@param senderPort Port | nil
+---@param targetPort Port
 ---@param payload? any
 ---@param handler? fun(message: ModemMessage)
 local function send(modem, senderPort, targetPort, payload, handler)
   modem = validateModem(modem)
-  if senderPort ~= nil and not modem.isOpen(senderPort) then
-    console.error("senderPort is not opened")
-  end
 
   parallel.waitForAll(
     function()
       if senderPort == nil or handler == nil then
         return
       end
+
+      open(modem, senderPort)
 
       waitMessage(modem, senderPort, handler)
     end,
@@ -140,12 +145,10 @@ local function send(modem, senderPort, targetPort, payload, handler)
 end
 
 local modemUtils = {
-  getModemByName = getModemByName,
-  getModems = getModems,
   getModem = getModem,
-  open = open,
   listen = listen,
   send = send,
+  Port = Port,
 }
 
 return modemUtils

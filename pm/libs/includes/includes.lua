@@ -1,5 +1,5 @@
 ---@generic T
----@param list table<number, T>
+---@param list T[]
 ---@param value T
 ---@return boolean
 ---@nodiscard

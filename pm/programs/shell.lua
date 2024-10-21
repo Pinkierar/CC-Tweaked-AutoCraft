@@ -35,7 +35,7 @@ end
 
 ---@param program string
 ---@param args string[]
----@param senderPort number
+---@param senderPort Port
 local function run(program, args, senderPort)
   local included, main = pcall(require, "sell/" .. program)
 
@@ -83,35 +83,28 @@ local function payloadToCommand(payload)
   return program, args
 end
 
----@param message ModemMessage
-local function runByMessage(message)
-  local payload = message.payload
-  local senderPort = message.senderPort
-
-  local program, args = payloadToCommand(payload)
-
-  return run(program, args, senderPort)
-end
-
-local function main(args)
-  local port = args[1] and tonumber(args[1]) or 1337
+local function main()
+  local port = modemUtils.Port.crafter
   local modem = modemUtils.getModem()
 
-  ---@param message ModemMessage
-  local function requestHandler(message)
-    local success, result = pcall(runByMessage, message)
+  modemUtils.listen(modem, port, function(message)
+    local payload = message.payload
+    local senderPort = message.senderPort
+
+    local success, result = pcall(function()
+      local program, args = payloadToCommand(payload)
+    
+      return run(program, args, senderPort)
+    end)
 
     if not success then
-      local senderPort = message.senderPort
       local error = errorToString(result)
 
       console.error(error)
 
       modemUtils.send(modem, nil, senderPort, error)
     end
-  end
-
-  modemUtils.listen(modem, port, requestHandler)
+  end)
 end
 
 return main

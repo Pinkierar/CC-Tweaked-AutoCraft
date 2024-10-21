@@ -6,6 +6,11 @@ local driveUtils = require("includes/driveUtils")
 local function main()
   local drives = driveUtils.getDrivesWithDisk()
 
+  if #drives == 0 then
+    console.error("No drives connected")
+    return
+  end
+
   if #drives ~= 1 then
     drives = driveUtils.getPmDrives()
     if #drives ~= 1 then
@@ -15,11 +20,6 @@ local function main()
         return
       end
     end
-  end
-
-  if #drives == 0 then
-    console.error("No drives connected")
-    return
   end
 
   for _, drive in ipairs(drives) do

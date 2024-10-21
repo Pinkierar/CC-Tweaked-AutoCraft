@@ -2,17 +2,27 @@ local Recipe = require("auto-craft/Recipe")
 local Inventory = require("auto-craft/Inventory")
 local console = require("includes/console")
 local input = require("includes/input")
+local fileUtils = require("includes/fileUtils")
+local driveUtils = require("includes/driveUtils")
 
 local function main()
+  local drives = driveUtils.getDrives()
+
+  if #drives == 0 then
+    error("drive not found")
+  end
+
+  if #drives ~= 1 then
+    error("to many drives")
+  end
+
+  local drive = drives[1]
+
   console.log("Welcome to Recipe Creator!")
 
   local name = input.prompt("Enter recipe name")
 
-  local type = input.choice("Select crafter", {"workbench", "machine"})
-  if type == nil then
-    console.error("Wrong type")
-    return
-  end
+  local type = input.choice("Select crafter", { "workbench", "machine" })
 
   local inventory = Inventory.new()
 
@@ -33,7 +43,22 @@ local function main()
   console.lineBreak()
   if input.confirm("Save the recipe?") then
     inventory.updateSlots()
-    Recipe.new(name, type, inventory.slots).save()
+
+    local recipe = Recipe.new(name, type, inventory.slots)
+
+    while not drive.isDiskPresent() do
+      console.log("insert the disc into the drive and press Enter")
+      ---@diagnostic disable-next-line: discard-returns
+      input.waitKey({ "enter" })
+    end
+
+    local mountPath = drive.getMountPath()
+    local recipePath = mountPath .. "/main.recipe"
+    local recipeContent = recipe.toContent()
+
+    fileUtils.write(recipePath, recipeContent)
+    drive.setDiskLabel("recipe: " .. name)
+
     console.log("Recipe saved!")
   else
     console.log("Save canceled")

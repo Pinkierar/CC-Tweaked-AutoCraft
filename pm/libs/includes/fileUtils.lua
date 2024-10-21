@@ -1,26 +1,32 @@
 ---@param path string
----@return string File content
+---@return string
 ---@nodiscard
 local function read(path)
-  local file = io.open(path, "r")
+  local file = fs.open(path, "r")
+  if type(file) ~= "table" then
+    if type(file) == "string" then
+      error(file)
+    else
+      error("cannot be open")
+    end
+  end
 
-  io.output(file)
-  local content = io.read()
-  io.output(io.stdout)
-  io.close(file)
-
-  return content
+  return file.readAll() or ""
 end
 
 ---@param path string
 ---@param content string
 local function write(path, content)
-  local file = io.open(path, "w+")
+  local file = fs.open(path, "w+")
+  if type(file) ~= "table" then
+    if type(file) == "string" then
+      error(file)
+    else
+      error("cannot be open")
+    end
+  end
 
-  io.output(file)
-  io.write(content)
-  io.output(io.stdout)
-  io.close(file)
+  file.write(content)
 end
 
 local fileUtils = {

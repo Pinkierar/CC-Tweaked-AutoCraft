@@ -1,28 +1,30 @@
-local fileUtils = require("includes/fileUtils")
+local Slot        = require("auto-craft/Slot")
+local Item        = require("auto-craft/Item")
+local stringSplit = require("includes/stringSplit")
 
 
 ---@class (exact) Recipe
 ---@field name string
 ---@field type CraftingType
 ---@field slots SlotMatrix
----@field toString fun(): string
----@field save fun()
+---@field toContent fun(): string
 
 
----@param name string
+---@param recipeName string
 ---@param type CraftingType
 ---@param slots SlotMatrix
 ---@return Recipe
 ---@nodiscard
-local function new(name, type, slots)
+local function new(recipeName, type, slots)
   ---@return string
   ---@nodiscard
-  local function toString()
+  local function toContent()
     ---@type string
-    local content = name .. " " .. type
+    local content = recipeName .. " " .. type
 
     ---@type table<string, number>
     local resources = {}
+    local resourcesLength = 0
     slots.forEach(function(slot)
       local item = slot.item;
       if item.isEmpty() then
@@ -30,10 +32,11 @@ local function new(name, type, slots)
       end
 
       local name = item.name
-      local id = #resources + 1
+      local id = resourcesLength + 1
 
       if resources[name] == nil then
         resources[name] = id
+        resourcesLength = resourcesLength + 1
 
         content = content .. "\n" .. id .. " " .. name
       end
@@ -67,23 +70,62 @@ local function new(name, type, slots)
     return content
   end
 
-  local function save()
-    local path = "recipes/" .. name .. ".recipe"
-
-    fileUtils.write(path, toString())
-  end
-
   return {
     type = type,
     slots = slots,
-    toString = toString,
-    save = save,
+    toContent = toContent,
   }
+end
+
+---@param content string
+---@return Recipe
+local function fromContent(content)
+  ---@type string[]
+  local lines = stringSplit(content, "\n")
+  ---@type string, string
+  local recipeName, type = table.unpack(stringSplit(lines[1], " "))
+
+  ---@type table<string, string>
+  local resources = {}
+  for i = 2, #lines - 4 do
+    local line = lines[i]
+    ---@type string, string
+    local id, name = table.unpack(stringSplit(line, " "))
+    resources[id] = name
+  end
+
+  local slots = Slot.newMatrix(4, 4)
+  for y = 1, 4 do
+    local line = lines[#lines + y - 4]
+    local lineSplit = stringSplit(line, " ")
+
+    for x = 1, 4 do
+      local lineSplitItem = lineSplit[x]
+      local slotId = Slot.positionToSlotId(x, y)
+
+      local item
+      if lineSplitItem ~= "-" then
+        ---@type string, string
+        local id, countStr = table.unpack(stringSplit(lineSplitItem, "x"))
+        local count = tonumber(countStr)
+        local name = resources[id];
+
+        item = Item.new(name, count)
+      else
+        item = Item.new()
+      end
+
+      slots.set(x, y, Slot.new(slotId, item))
+    end
+  end
+
+  return new(recipeName, type, slots)
 end
 
 
 local Recipe = {
-  new = new
+  new = new,
+  fromContent = fromContent,
 }
 
 return Recipe
