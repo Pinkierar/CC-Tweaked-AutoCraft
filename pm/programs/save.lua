@@ -1,6 +1,6 @@
 local console = require("includes.console")
 local input = require("includes.input")
-local copy = require("includes.copy")
+local fsUtils = require("includes.fsUtils")
 local driveUtils = require("includes.driveUtils")
 
 local function main()
@@ -24,7 +24,7 @@ local function main()
 
   for _, drive in ipairs(drives) do
     local mountPath = drive.getMountPath()
-    copy("pm", fs.combine(mountPath, "pm"))
+    fsUtils.copy("pm", fs.combine(mountPath, "pm"))
     drive.setDiskLabel("pm")
   end
 

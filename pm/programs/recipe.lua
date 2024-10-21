@@ -2,7 +2,7 @@ local Recipe = require("auto-craft.Recipe")
 local Inventory = require("auto-craft.Inventory")
 local console = require("includes.console")
 local input = require("includes.input")
-local fileUtils = require("includes.fileUtils")
+local fsUtils = require("includes.fsUtils")
 local driveUtils = require("includes.driveUtils")
 
 local function main()
@@ -56,7 +56,7 @@ local function main()
     local recipePath = mountPath .. "/main.recipe"
     local recipeContent = recipe.toContent()
 
-    fileUtils.write(recipePath, recipeContent)
+    fsUtils.write(recipePath, recipeContent)
     drive.setDiskLabel("recipe: " .. name)
 
     console.log("Recipe saved!")

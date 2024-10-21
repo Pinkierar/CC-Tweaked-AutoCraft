@@ -1,4 +1,4 @@
-local modemUtils = require("includes/modemUtils")
+local modemUtils = require("includes.modemUtils")
 
 --- @return table<number, string>
 local function getPrograms()
