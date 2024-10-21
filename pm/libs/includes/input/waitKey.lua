@@ -1,5 +1,5 @@
-local includes = require("includes/includes")
-local console = require("includes/console")
+local includes = require("includes.includes")
+local console = require("includes.console")
 
 ---@param possibleKeys table<number, string>
 ---@return string

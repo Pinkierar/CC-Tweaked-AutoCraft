@@ -1,7 +1,7 @@
-local prompt = require("includes/input/prompt")
-local choice = require("includes/input/choice")
-local waitKey = require("includes/input/waitKey")
-local confirm = require("includes/input/confirm")
+local prompt = require("includes.input.prompt")
+local choice = require("includes.input.choice")
+local waitKey = require("includes.input.waitKey")
+local confirm = require("includes.input.confirm")
 
 return {
   prompt = prompt,

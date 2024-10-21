@@ -1,5 +1,5 @@
-local Slot = require("auto-craft/Slot")
-local Item = require("auto-craft/Item")
+local Slot = require("auto-craft.Slot")
+local Item = require("auto-craft.Item")
 
 
 ---@class (exact) Inventory

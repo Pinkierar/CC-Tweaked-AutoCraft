@@ -1,4 +1,4 @@
-local craft = require("auto-craft/crafting/workbench")
+local craft = require("auto-craft.crafting.workbench")
 
 return {
   workbenchCraft = craft.craft

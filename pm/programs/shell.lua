@@ -1,5 +1,5 @@
-local modemUtils = require("includes/modemUtils")
-local console    = require("includes/console")
+local modemUtils = require("includes.modemUtils")
+local console    = require("includes.console")
 
 ---@param error any
 ---@return string
@@ -37,11 +37,11 @@ end
 ---@param args string[]
 ---@param senderPort Port
 local function run(program, args, senderPort)
-  local included, main = pcall(require, "sell/" .. program)
+  local included, main = pcall(require, "sell." .. program)
 
   if not included then
     console.error(errorToString(main))
-    error("unkown program")
+    error("unknown program")
   end
 
   if type(main) ~= "function" then

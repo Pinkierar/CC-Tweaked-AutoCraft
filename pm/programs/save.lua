@@ -1,7 +1,7 @@
-local console = require("includes/console")
-local input = require("includes/input")
-local copy = require("includes/copy")
-local driveUtils = require("includes/driveUtils")
+local console = require("includes.console")
+local input = require("includes.input")
+local copy = require("includes.copy")
+local driveUtils = require("includes.driveUtils")
 
 local function main()
   local drives = driveUtils.getDrivesWithDisk()

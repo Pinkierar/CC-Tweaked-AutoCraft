@@ -1,4 +1,4 @@
-local console = require("includes/console")
+local console = require("includes.console")
 
 ---@param from string
 ---@param to string

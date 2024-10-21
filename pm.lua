@@ -1,1 +1,1 @@
-require("/pm/init")
+require("pm.init")

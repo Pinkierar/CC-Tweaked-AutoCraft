@@ -1,6 +1,6 @@
-local Slot        = require("auto-craft/Slot")
-local Item        = require("auto-craft/Item")
-local stringSplit = require("includes/stringSplit")
+local Slot        = require("auto-craft.Slot")
+local Item        = require("auto-craft.Item")
+local stringSplit = require("includes.stringSplit")
 
 
 ---@class (exact) Recipe
@@ -8,19 +8,20 @@ local stringSplit = require("includes/stringSplit")
 ---@field type CraftingType
 ---@field slots SlotMatrix
 ---@field toContent fun(): string
+---@field isResult fun(x: number, y: number): boolean
 
 
----@param recipeName string
+---@param name string
 ---@param type CraftingType
 ---@param slots SlotMatrix
 ---@return Recipe
 ---@nodiscard
-local function new(recipeName, type, slots)
+local function new(name, type, slots)
   ---@return string
   ---@nodiscard
   local function toContent()
     ---@type string
-    local content = recipeName .. " " .. type
+    local content = name .. " " .. type
 
     ---@type table<string, number>
     local resources = {}
@@ -31,14 +32,14 @@ local function new(recipeName, type, slots)
         return
       end
 
-      local name = item.name
+      local itemName = item.name
       local id = resourcesLength + 1
 
-      if resources[name] == nil then
-        resources[name] = id
+      if resources[itemName] == nil then
+        resources[itemName] = id
         resourcesLength = resourcesLength + 1
 
-        content = content .. "\n" .. id .. " " .. name
+        content = content .. "\n" .. id .. " " .. itemName
       end
     end)
 
@@ -60,9 +61,9 @@ local function new(recipeName, type, slots)
         return
       end
 
-      local name = item.name
+      local itemName = item.name
       local count = item.count
-      local id = resources[name]
+      local id = resources[itemName]
 
       content = content .. id .. "x" .. count
     end)
@@ -70,10 +71,24 @@ local function new(recipeName, type, slots)
     return content
   end
 
+  ---@param x number
+  ---@param y number
+  ---@return boolean
+  ---@nodiscard
+  local function isResult(x, y)
+    if type == "workbench" then
+      return x == 4 and y == 2
+    else
+      return x == 4
+    end
+  end
+
   return {
+    name = name,
     type = type,
     slots = slots,
     toContent = toContent,
+    isResult = isResult
   }
 end
 

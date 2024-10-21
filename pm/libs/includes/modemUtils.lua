@@ -1,4 +1,4 @@
-local console = require("includes/console")
+local console = require("includes.console")
 
 
 ---@class (exact) ModemMessage
@@ -11,6 +11,8 @@ local console = require("includes/console")
 local Port = {
   center = 1,
   crafter = 2,
+  request = 3,
+  storage = 4,
 }
 
 ---@param modem Modem | nil

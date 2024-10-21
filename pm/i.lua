@@ -9,6 +9,6 @@ local env = setmetatable({}, {__index = _ENV})
 env.require, env.package = r.make(env, pmPath .. "/libs")
 require = env.require
 
-local update = require("/" .. pmPath .. "/programs/update")
+local update = require("." .. pmPath .. ".programs.update")
 
 update()

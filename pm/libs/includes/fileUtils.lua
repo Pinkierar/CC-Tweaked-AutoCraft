@@ -17,7 +17,13 @@ end
 ---@param path string
 ---@param content string
 local function write(path, content)
-  local file = fs.open(path, "w+")
+  if fs.exists(path) then
+    if not fs.isDir(path) then
+      fs.delete(path)
+    end
+  end
+
+  local file = fs.open(path, "w")
   if type(file) ~= "table" then
     if type(file) == "string" then
       error(file)

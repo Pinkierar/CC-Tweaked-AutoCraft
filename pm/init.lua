@@ -3,8 +3,8 @@ local env = setmetatable({}, { __index = _ENV })
 env.require, env.package = r.make(env, "/pm/libs")
 require = env.require
 
-local console = require("includes/console")
-local includes = require("includes/includes")
+local console = require("includes.console")
+local includes = require("includes.includes")
 
 --- @type string
 local program = arg[1]
@@ -51,7 +51,7 @@ if program == commands.list then
 end
 
 if includes(programs, program) then
-  local main = require("/pm/programs/" .. program)
+  local main = require(".pm.programs." .. program)
 
   local args = {}
   for i, value in ipairs(arg) do

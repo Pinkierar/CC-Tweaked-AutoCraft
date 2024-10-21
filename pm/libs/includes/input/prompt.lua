@@ -1,5 +1,5 @@
-local console = require("includes/console")
-local readUntil = require("includes/input/readUntil")
+local console = require("includes.console")
+local readUntil = require("includes.input.readUntil")
 
 ---@param message? string
 ---@param default? string

@@ -1,7 +1,7 @@
 local completion = require("cc.completion")
-local includes = require("includes/includes")
-local console = require("includes/console")
-local readUntil = require("includes/input/readUntil")
+local includes = require("includes.includes")
+local console = require("includes.console")
+local readUntil = require("includes.input.readUntil")
 
 ---@param message string | nil
 ---@param variants table<number, string>

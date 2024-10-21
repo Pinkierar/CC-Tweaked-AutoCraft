@@ -1,5 +1,5 @@
-local choice = require("includes/input/choice")
-local console = require("includes/console")
+local choice = require("includes.input.choice")
+local console = require("includes.console")
 
 ---@param message? string
 ---@param offLn? boolean

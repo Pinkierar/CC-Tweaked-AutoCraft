@@ -1,7 +1,7 @@
-local console = require("includes/console")
-local copy = require("includes/copy")
-local driveUtils = require("includes/driveUtils")
-local fileUtils = require("includes/fileUtils")
+local console = require("includes.console")
+local copy = require("includes.copy")
+local driveUtils = require("includes.driveUtils")
+local fileUtils = require("includes.fileUtils")
 
 local function main()
   local drives = driveUtils.getDrivesWithDisk()
@@ -23,7 +23,7 @@ local function main()
 
   local mountPath = drive.getMountPath()
   copy(fs.combine(mountPath, "pm"), "pm")
-  fileUtils.write("/pm.lua", "require(\"/pm/init\")")
+  fileUtils.write("/pm.lua", [[require("pm.init")]])
 
   console.log("Complete!")
 end
