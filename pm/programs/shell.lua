@@ -3,36 +3,44 @@ local console    = require("includes.console")
 local includes   = require("includes.includes")
 local fsUtils    = require("includes.fsUtils")
 
+
+---@class PortError
+---@field message string
+---@field info? any
+
+
 ---@param error any
----@return string
-local function errorToString(error)
+---@return PortError
+local function errorToPortError(error)
   if error == nil then
-    return "nil"
+    return {message = "nil"}
   end
 
   if type(error) == "string" then
-    return error
+    return {message = error}
   end
 
   if type(error) == "number" then
-    return tostring(error)
+    return {message = tostring(error)}
   end
 
   if type(error) == "boolean" then
     if error then
-      return "true"
+      return {message = "true"}
     else
-      return "false"
+      return {message = "false"}
     end
   end
 
   if type(error) == "table" then
     if type(error.message) == "string" then
-      return error.message
+      local message = error.message
+      error.message = nil
+      return {message = message, info = error}
     end
   end
 
-  return "unkown error"
+  return {message = "unkown error", info = error}
 end
 
 ---@param program string
@@ -42,13 +50,15 @@ local function run(program, args, senderPort)
   local included, main = pcall(require, "sell." .. program)
 
   if not included then
-    console.error(errorToString(main))
+    console.error(errorToPortError(main))
     error("unknown program")
   end
 
   if type(main) ~= "function" then
     error("module must be function")
   end
+
+  console.log("running " .. program)
 
   main(args, senderPort)
 end
@@ -98,7 +108,7 @@ local function main(args)
   end
 
   console.clear()
-  console.log("Welome to shell!")
+  console.log("Welcome to shell!")
 
   fsUtils.write(
     "/startup/shell.lua",
@@ -118,7 +128,7 @@ local function main(args)
     end)
 
     if not success then
-      local error = errorToString(result)
+      local error = errorToPortError(result)
 
       console.error(error)
 

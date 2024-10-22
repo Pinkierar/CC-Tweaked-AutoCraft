@@ -31,7 +31,7 @@ local function new(name, count)
   }
 end
 
----@param detail ItemDetail
+---@param detail ItemDetail | nil
 ---@return Item
 ---@nodiscard
 local function newFromDetail(detail)

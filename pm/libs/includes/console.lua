@@ -1,3 +1,5 @@
+local includes = require "includes.includes"
+
 ---@return number, number
 ---@nodiscard
 local function getCursorPos()
@@ -20,9 +22,19 @@ local function log(message, offLn)
   end
 end
 
----@param message string
-local function error(message)
-  printError(message)
+---@param e string | PortError
+local function error(e)
+  if type(e) ~= "table" then
+    printError(e)
+    return
+  end
+
+  if not includes({ "table", "string", "number", "boolean" }, type(e.info)) then
+    printError(e.message)
+    return
+  end
+
+  printError(e.message, textutils.serialize(e.info))
 end
 
 local function clear()

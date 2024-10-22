@@ -1,6 +1,7 @@
 local Slot        = require("auto-craft.Slot")
 local Item        = require("auto-craft.Item")
 local stringSplit = require("includes.stringSplit")
+local console     = require("includes.console")
 
 
 ---@class (exact) Recipe
@@ -9,6 +10,7 @@ local stringSplit = require("includes.stringSplit")
 ---@field slots SlotMatrix
 ---@field toContent fun(): string
 ---@field isResult fun(x: number, y: number): boolean
+---@field isIngredient fun(x: number, y: number): boolean
 
 
 ---@param name string
@@ -83,12 +85,37 @@ local function new(name, type, slots)
     end
   end
 
+  ---@param x number
+  ---@param y number
+  ---@return boolean
+  ---@nodiscard
+  local function isIngredient(x, y)
+    if type == "workbench" then
+      return x <= 3 and y <= 3
+    else
+      return x <= 3
+    end
+  end
+
+  ---@type SlotMatrix
+  local recipeSlots = Slot.newMatrix(4, 4).map(
+    function(slot, x, y)
+      local recipeSlot = slots.get(x, y)
+      if recipeSlot == nil then
+        return slot
+      else
+        return recipeSlot
+      end
+    end
+  ) --[[@as SlotMatrix]]
+
   return {
     name = name,
     type = type,
-    slots = slots,
+    slots = recipeSlots,
     toContent = toContent,
-    isResult = isResult
+    isResult = isResult,
+    isIngredient = isIngredient,
   }
 end
 
@@ -97,8 +124,12 @@ end
 local function fromContent(content)
   ---@type string[]
   local lines = stringSplit(content, "\n")
-  ---@type string, string
-  local recipeName, type = table.unpack(stringSplit(lines[1], " "))
+  ---@type string[]
+  local firstLineSplit = stringSplit(lines[1], " ")
+  -- TODO: Убрать костыли
+  local type = firstLineSplit[#firstLineSplit]
+  firstLineSplit[#firstLineSplit] = nil
+  local recipeName = table.concat(firstLineSplit, " ")
 
   ---@type table<string, string>
   local resources = {}
@@ -116,7 +147,6 @@ local function fromContent(content)
 
     for x = 1, 4 do
       local lineSplitItem = lineSplit[x]
-      local slotId = Slot.positionToSlotId(x, y)
 
       local item
       if lineSplitItem ~= "-" then
@@ -130,7 +160,7 @@ local function fromContent(content)
         item = Item.new()
       end
 
-      slots.set(x, y, Slot.new(slotId, item))
+      slots.get(x, y).item = item
     end
   end
 

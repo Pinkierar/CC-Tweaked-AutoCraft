@@ -8,15 +8,6 @@ local includes = require("includes.includes")
 ---@field distance number
 
 
----@enum Port
-local Port = {
-  center = 1,
-  crafter = 2,
-  request = 3,
-  storage = 4,
-  logs = 5,
-}
-
 ---@param modem Modem | nil
 ---@return Modem
 local function validateModem(modem)
@@ -31,13 +22,41 @@ local function validateModem(modem)
   return modem
 end
 
+---@param isWired? boolean
 ---@param name string
 ---@return Modem | nil
-local function getModemByName(name)
-  if peripheral.getType(name) == "modem" then
-    local modem = peripheral.wrap(name)
+local function getModemByName(isWired, name)
+  if peripheral.getType(name) ~= "modem" then
+    return nil
+  end
 
-    if modem.isWireless() then
+  local modem = peripheral.wrap(name)
+  local isWireless = modem.isWireless()
+
+  if modem == nil then
+    return nil
+  end
+
+  if isWired == true and not isWireless then
+    return modem
+  end
+
+  if isWired ~= true and isWireless then
+    return modem
+  end
+
+  return nil
+end
+
+---@param isWired? boolean
+---@return Modem | nil
+local function getModemByPeripheral(isWired)
+  local names = peripheral.getNames()
+
+  for _, name in ipairs(names) do
+    local modem = getModemByName(isWired, name)
+
+    if modem ~= nil then
       return modem
     end
   end
@@ -45,36 +64,14 @@ local function getModemByName(name)
   return nil
 end
 
----@param onlyOne? boolean
----@return table<number, Modem>
-local function getModems(onlyOne)
-  local names = peripheral.getNames()
-
-  ---@type table<number, Modem>
-  local modems = {}
-
-  for _, name in ipairs(names) do
-    local modem = getModemByName(name)
-
-    if modem ~= nil then
-      table.insert(modems, modem)
-
-      if onlyOne == true then
-        return modems
-      end
-    end
-  end
-
-  return modems
-end
-
 ---@param name? string
+---@param isWired? boolean
 ---@return Modem | nil
-local function getModem(name)
+local function getModem(name, isWired)
   if name == nil then
-    return getModems(true)[1]
+    return getModemByPeripheral(isWired)
   else
-    return getModemByName(name)
+    return getModemByName(isWired, name)
   end
 end
 
@@ -147,6 +144,15 @@ local function send(modem, senderPort, targetPort, payload, handler)
     end
   )
 end
+
+---@enum Port
+local Port = {
+  center = 1,
+  crafter = 2,
+  request = 3,
+  storage = 4,
+  logs = 5,
+}
 
 ---@param port number
 ---@param exclude Port[]

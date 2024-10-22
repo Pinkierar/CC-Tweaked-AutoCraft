@@ -1,7 +1,7 @@
 ---@class (exact) Matrix
 ---@field set fun(x: number, y: number, value: any)
 ---@field get fun(x: number, y: number): any
----@field map fun(callback: fun(item: any, x: number, y: number): boolean): Matrix
+---@field map fun(callback: fun(item: any, x: number, y: number): any): Matrix
 ---@field forEach fun(callback: fun(item: any, x: number, y: number))
 ---@field find fun(callback: fun(item: any, x: number, y: number): boolean): any
 

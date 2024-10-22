@@ -1,7 +1,7 @@
 local console = require("includes.console")
 
 local function main(args)
-  console.log(table.concat(args, " "))
+  console.log(textutils.serialize(args))
 end
 
 return main
