@@ -1,4 +1,5 @@
 local console = require("includes.console")
+local includes = require("includes.includes")
 
 
 ---@class (exact) ModemMessage
@@ -13,6 +14,7 @@ local Port = {
   crafter = 2,
   request = 3,
   storage = 4,
+  logs = 5,
 }
 
 ---@param modem Modem | nil
@@ -146,11 +148,27 @@ local function send(modem, senderPort, targetPort, payload, handler)
   )
 end
 
+---@param port number
+---@param exclude Port[]
+---@return boolean
+local function isValidPort(port, exclude)
+  if includes(exclude, port) then
+    return false
+  end
+
+  if includes(Port, port) then
+    return true
+  end
+
+  return false
+end
+
 local modemUtils = {
   getModem = getModem,
   listen = listen,
   send = send,
   Port = Port,
+  isValidPort = isValidPort,
 }
 
 return modemUtils

@@ -1,5 +1,7 @@
 local modemUtils = require("includes.modemUtils")
 local console    = require("includes.console")
+local includes   = require("includes.includes")
+local fsUtils    = require("includes.fsUtils")
 
 ---@param error any
 ---@return string
@@ -25,7 +27,7 @@ local function errorToString(error)
   end
 
   if type(error) == "table" then
-    if error.message ~= nil then
+    if type(error.message) == "string" then
       return error.message
     end
   end
@@ -83,8 +85,26 @@ local function payloadToCommand(payload)
   return program, args
 end
 
-local function main()
-  local port = modemUtils.Port.crafter
+local function main(args)
+  if args[1] == "stop" then
+    fs.delete("/startup/shell.lua")
+    console.log("shell removed from startup")
+    return
+  end
+
+  local port = tonumber(args[1]) --[[@as Port | nil]]
+  if port == nil or not modemUtils.isValidPort(port, { modemUtils.Port.center }) then
+    error("unknown port")
+  end
+
+  console.clear()
+  console.log("Welome to shell!")
+
+  fsUtils.write(
+    "/startup/shell.lua",
+    string.format([[shell.run("pm shell %u")]], port)
+  )
+
   local modem = modemUtils.getModem()
 
   modemUtils.listen(modem, port, function(message)
@@ -92,9 +112,9 @@ local function main()
     local senderPort = message.senderPort
 
     local success, result = pcall(function()
-      local program, args = payloadToCommand(payload)
-    
-      return run(program, args, senderPort)
+      local program, commandArgs = payloadToCommand(payload)
+
+      return run(program, commandArgs, senderPort)
     end)
 
     if not success then
@@ -102,7 +122,11 @@ local function main()
 
       console.error(error)
 
-      modemUtils.send(modem, nil, senderPort, error)
+      modemUtils.send(modem, nil, senderPort, {
+        from = os.getComputerID(),
+        type = "error",
+        message = error,
+      })
     end
   end)
 end
